@@ -12,4 +12,8 @@ public interface StockService {
     Stock addStock(String companyCode, Double stockPrice);
 
     StockData getStockFromDate(String companyCode, Date fromDate, Date endDate);
+
+    Stock getLatestStockDetail(String companycode);
+
+    List<Stock> deleteCompanyData(String companycode);
 }

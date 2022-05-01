@@ -1,5 +1,6 @@
 package com.stock.service.eStockService.model.DTO;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,8 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StockData {
-
-    private List<Stock> stock;
-    private StockAgg stockAggr;
+public class CompanyStockResponse {
+    private List<Stock> stocks;
+    private String error;
 }

@@ -1,18 +1,18 @@
 package com.stock.service.eStockService.model.DTO;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class StockData {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class StockAgg {
 
-    private List<Stock> stock;
-    private StockAgg stockAggr;
+    Float maxStockValue;
+    Float minStockValue;
+    Float avgStockValue;
 }
