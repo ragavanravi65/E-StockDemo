@@ -13,7 +13,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document("StockDetails")
+@Document(collection ="StockDetails")
 public class StockMongoEntity {
     private String id;
     private String companyCode;
