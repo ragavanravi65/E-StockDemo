@@ -23,9 +23,8 @@ public class SwaggerConfiguration {
 	}
 
 	private ApiInfo getApiInfo() {
-		ApiInfo apiInfo = new ApiInfoBuilder().title("  Application")
+		return new ApiInfoBuilder().title("Stock Application-Stock Data")
 				.contact(new Contact("Ragavan R", "https://ragavfolio.herokuapp.com/", "ragavanravi65@gmail.com"))
-				.description("Demonstration of Journey ").build();
-		return apiInfo;
+				.description("Demonstration of Stock Activities ").build();
 	}
 }
