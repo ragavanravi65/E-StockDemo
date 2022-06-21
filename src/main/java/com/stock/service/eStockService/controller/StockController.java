@@ -5,6 +5,8 @@ import com.stock.service.eStockService.model.DTO.CompanyStockResponse;
 import com.stock.service.eStockService.model.DTO.Stock;
 import com.stock.service.eStockService.model.DTO.StockData;
 import com.stock.service.eStockService.service.StockService;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -38,8 +40,12 @@ public class StockController {
 	@GetMapping("/get/{companycode}/{startdate}/{enddate}")
 	public ResponseEntity<StockData> getStockList(@PathVariable("companycode") @NotBlank
 								   @Size(min = 1) String companycode,
-														@PathVariable("startdate") @DateTimeFormat(pattern="yyyy-MM-dd") Date fromDate,
-														@PathVariable("enddate") @DateTimeFormat(pattern="yyyy-MM-dd") Date endDate) {
+														@PathVariable("startdate")
+														@ApiParam(name="startdate",value = "yyyy-MM-dd", example = "2020-10-13")
+														@DateTimeFormat(pattern="yyyy-MM-dd") Date fromDate,
+														@PathVariable("enddate")
+													  @ApiParam(value = "yyyy-MM-dd", example = "2020-10-13")
+													  @DateTimeFormat(pattern="yyyy-MM-dd") Date endDate) {
 		StockData resultSet = stockService.getStockFromDate(companycode, fromDate, endDate);
 		 return ResponseEntity.ok().body(resultSet);
 	}

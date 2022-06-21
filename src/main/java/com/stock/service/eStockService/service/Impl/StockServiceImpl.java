@@ -108,6 +108,7 @@ public class StockServiceImpl implements StockService {
     public List<Stock> deleteCompanyData(String companycode) {
         List<StockMongoEntity> deletedResults = mongoTemplate.findAllAndRemove(new Query(Criteria.where("companyCode").is(companycode)), StockMongoEntity.class);
         if(deletedResults!=null){
+            stockRepository.deleteAllByCompanyCode(companycode);
             return mapperImpl.EntityListToStockList(deletedResults);
         }
         return null;

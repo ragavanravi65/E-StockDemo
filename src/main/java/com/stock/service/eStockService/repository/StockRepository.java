@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -21,5 +22,6 @@ public interface StockRepository extends JpaRepository<StockEntity, StockKey> {
             " s.Company_Code=:companyCD AND s.timestamp>=:fromDate and s.timestamp<=:endDate",nativeQuery = true)
     StockStats getStatsForInterval(@Param("companyCD") String companyCD,@Param("fromDate") Date fromDate,@Param("endDate") Date endDate);
 
-
+    @Transactional
+    void deleteAllByCompanyCode(String companycode);
 }
