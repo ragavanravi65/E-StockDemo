@@ -4,6 +4,7 @@ import com.stock.service.eStockService.mapper.SimpleSourceDestinationMapper;
 import com.stock.service.eStockService.model.DTO.Stock;
 import com.stock.service.eStockService.model.DTO.StockAgg;
 import com.stock.service.eStockService.model.DTO.StockData;
+import com.stock.service.eStockService.model.DTO.StockMongoTemp;
 import com.stock.service.eStockService.model.entity.MongoDBEntity.StockMongoEntity;
 import com.stock.service.eStockService.model.entity.StockEntity;
 import com.stock.service.eStockService.repository.MongoDBRepository.StockMongoDBRepository;
@@ -19,6 +20,8 @@ import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.jms.annotation.JmsListener;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -40,11 +43,16 @@ public class StockServiceImpl implements StockService {
     @Autowired
     StockRepository stockRepository;
 
-    @Autowired
-    KafkaTemplate<String,StockMongoEntity> kafkaTemplate;
+//    @Autowired
+//    KafkaTemplate<String,StockMongoEntity> kafkaTemplate;
 
     private SimpleSourceDestinationMapper mapperImpl
             = Mappers.getMapper(SimpleSourceDestinationMapper.class);
+
+    @Autowired
+    private JmsTemplate jmsTemplate;
+
+    private static final String DESTINATION_NAME = "stocksaver";
 
     public Stock addStock(String companyCode, Double stockPrice){
         StockEntity persistData=StockEntity.builder()
@@ -65,18 +73,24 @@ public class StockServiceImpl implements StockService {
                 .stockPrice(stockPrice)
                 .timestamp(new Date())
                 .build();
-        //publisher
-        log.info("Publishing begins to Kafka Topic");
+        //publisher via kafka
+//        log.info("Publishing begins to Kafka Topic");
 //        stockSaverListener(stockMongoEntity);
-        kafkaTemplate.send("stockSaver",stockMongoEntity);
-        log.info("Published successfully to Kafka Topic");
+//        kafkaTemplate.send("stocksaver",stockMongoEntity);
+//        log.info("Published successfully to Kafka Topic");
 //        stockEntityMongoRepository.insert(stockMongoEntity);
+
+        //publish via servicebus queue
+        log.info("Published begins to queue");
+        jmsTemplate.convertAndSend(DESTINATION_NAME, mapperImpl.EntityToTemp(stockMongoEntity));
+        log.info("Published successfully to queue");
     }
 
-    @KafkaListener(topics = "stockSaver",groupId ="tester" , containerFactory ="getConsumerFactory")
-    public void stockSaverListener(StockMongoEntity inputStock){
+//    @KafkaListener(topics = "stocksaver",groupId ="tester" , containerFactory ="getConsumerFactory")
+    @JmsListener(destination = DESTINATION_NAME, containerFactory = "jmsListenerContainerFactory")
+    public void stockSaverListener(StockMongoTemp inputStock){
         log.info("Initiating Persistance to Read database");
-        stockEntityMongoRepository.insert(inputStock);
+        stockEntityMongoRepository.insert(mapperImpl.TempToEntity(inputStock));
         log.info("Successful Persistance to Read database");
 
     }
